@@ -1,9 +1,13 @@
 pragma solidity ^0.4.24;
+
+import '../coffeecore/Ownable.sol';
+import '../coffeeaccesscontrol/RetailerRole.sol';
+import '../coffeeaccesscontrol/FarmerRole.sol';
+import '../coffeeaccesscontrol/DistributorRole.sol';
+import '../coffeeaccesscontrol/ConsumerRole.sol';
+
 // Define a contract 'Supplychain'
 contract SupplyChain is Ownable, FarmerRole, DistributorRole, RetailerRole, ConsumerRole {
-
-  // Define 'owner'
-  // address owner; - use origOwner from Ownable
 
   // Define a variable called 'upc' for Universal Product Code (UPC)
   uint  upc;
@@ -110,34 +114,34 @@ contract SupplyChain is Ownable, FarmerRole, DistributorRole, RetailerRole, Cons
   
   // Define a modifier that checks if an item.state of a upc is Shipped
   modifier shipped(uint _upc) {
-    require(items[_upc].itemState.Shipped);
+    require(items[_upc].itemState == State.Shipped);
     _;
   }
 
   // Define a modifier that checks if an item.state of a upc is Received
   modifier received(uint _upc) {
-    require(items[_upc].itemState.Received);
+    require(items[_upc].itemState == State.Received);
     _;
   }
 
   // Define a modifier that checks if an item.state of a upc is Purchased
   modifier purchased(uint _upc) {
-    require(items[_upc].itemState.Purchased);
+    require(items[_upc].itemState == State.Purchased);
     _;
   }
 
-  // In the constructor set 'owner' to the address that instantiated the contract
   // and set 'sku' to 1
   // and set 'upc' to 1
   constructor() public payable {
-    origOwner = msg.sender;
     sku = 1;
     upc = 1;
   }
 
   // Define a function 'kill' if required
   function kill() onlyOwner public {
-      selfdestruct(owner);
+    if(msg.sender == owner()){
+      selfdestruct(owner());
+    }
   }
 
   // Define a function 'harvestItem' that allows a farmer to mark an item 'Harvested'
@@ -151,25 +155,28 @@ contract SupplyChain is Ownable, FarmerRole, DistributorRole, RetailerRole, Cons
     string  _productNotes
   ) onlyFarmer public 
   {
-
+    
     // Add the new item as part of Harvest
     items[_upc] = Item(
         {
-            upc: _upc,
             sku: sku,
-            ownerId: msg.sender,
-            originFarmerId: _originFarmerId,
+            upc: _upc,
+            ownerID: msg.sender,
+            originFarmerID: _originFarmerID,
             originFarmName: _originFarmName,
             originFarmInformation: _originFarmInformation,
             originFarmLatitude: _originFarmLatitude,
             originFarmLongitude: _originFarmLongitude,
-            productId: _upc + sku,
+            productID: _upc + sku,
             productNotes: _productNotes,
             productPrice: 0,
             itemState: State.Harvested,
+            distributorID: address(0),
+            retailerID: address(0),
+            consumerID: address(0)
          }
     );
-
+   
     // Increment sku
     sku = sku + 1;
 
@@ -231,7 +238,7 @@ contract SupplyChain is Ownable, FarmerRole, DistributorRole, RetailerRole, Cons
     // Transfer money to farmer
     farmersAddress.transfer(msg.value);
     // emit the appropriate event
-    emit Sold(_upc)
+    emit Sold(_upc);
   }
 
   // Define a function 'shipItem' that allows the distributor to mark an item 'Shipped'
@@ -291,7 +298,7 @@ contract SupplyChain is Ownable, FarmerRole, DistributorRole, RetailerRole, Cons
   {
   // Assign values to the 8 parameters
   Item storage item = items[_upc];
-  itemSku = item.sku;
+  itemSKU = item.sku;
   itemUPC = item.upc;
   ownerID = item.ownerID;
   originFarmerID = item.originFarmerID;
@@ -329,12 +336,12 @@ contract SupplyChain is Ownable, FarmerRole, DistributorRole, RetailerRole, Cons
   {
     // Assign values to the 9 parameters
     Item storage item = items[_upc];
-    itemSku = item.sku;
+    itemSKU = item.sku;
     itemUPC = item.upc;
     productID = item.productID;
     productNotes = item.productNotes;
     productPrice = item.productPrice;
-    itemState = item.itemState;
+    itemState = uint8(item.itemState);
     distributorID = item.distributorID;
     retailerID = item.retailerID;
     consumerID = item.consumerID;
