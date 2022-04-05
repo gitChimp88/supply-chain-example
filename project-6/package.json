@@ -12,5 +12,9 @@
   "license": "MIT",
   "devDependencies": {
     "lite-server": "2.4.0"
+  },
+  "dependencies": {
+    "web3": "^1.2.1",
+    "web3-utils": "^1.2.1"
   }
 }
