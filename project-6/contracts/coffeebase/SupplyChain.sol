@@ -277,7 +277,7 @@ contract SupplyChain is Ownable, FarmerRole, DistributorRole, RetailerRole, Cons
     // Update the appropriate fields - ownerID, consumerID, itemState
     Item storage item = items[_upc];
     item.ownerID = msg.sender;
-    item.retailerID = msg.sender;
+    item.consumerID = msg.sender;
     item.itemState = State.Purchased;
     // Emit the appropriate event
     emit Purchased(_upc);
