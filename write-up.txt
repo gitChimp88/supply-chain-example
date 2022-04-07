@@ -1,0 +1,14 @@
+Contract transaction hash and address - 
+Transaction hash -
+0xcadb6fe9cbdd1faa7064ff0753e143d7b8501d556c7e8e67873f96f129f57515
+
+address deployed to on Rinkeby - 
+0xe5bb9c3c2e9c8c6347f496283f20b0d7d53ea8f4
+
+Libraries used - 
+web3-utils - provides useful utility functions for web3 on the frontend.
+truffle-hdwallet-provider - used to sign transactions for metamask account when deploying to public test network.
+
+versions - 
+node 16.3
+truffle 4.1
