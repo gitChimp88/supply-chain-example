@@ -188,7 +188,7 @@ contract SupplyChain is Ownable, FarmerRole, DistributorRole, RetailerRole, Cons
   // Define a function 'processtItem' that allows a farmer to mark an item 'Processed'
   // Call modifier to check if upc has passed previous supply chain stage
   // Call modifier to verify caller of this function
-  function processItem(uint _upc) onlyFarmer public harvested(_upc) verifyCaller(msg.sender) {
+  function processItem(uint _upc) onlyFarmer public harvested(_upc) verifyCaller(items[_upc].ownerID) {
     // Update the appropriate fields
     Item storage item = items[_upc];
     item.itemState = State.Processed;
@@ -200,7 +200,7 @@ contract SupplyChain is Ownable, FarmerRole, DistributorRole, RetailerRole, Cons
   // Define a function 'packItem' that allows a farmer to mark an item 'Packed'
   // Call modifier to check if upc has passed previous supply chain stage
   // Call modifier to verify caller of this function
-  function packItem(uint _upc) onlyFarmer public processed(_upc) verifyCaller(msg.sender) {
+  function packItem(uint _upc) onlyFarmer public processed(_upc) verifyCaller(items[_upc].ownerID) {
     // Update the appropriate fields
     Item storage item = items[_upc];
     item.itemState = State.Packed;
@@ -211,7 +211,7 @@ contract SupplyChain is Ownable, FarmerRole, DistributorRole, RetailerRole, Cons
   // Define a function 'sellItem' that allows a farmer to mark an item 'ForSale'
   // Call modifier to check if upc has passed previous supply chain stage
   // Call modifier to verify caller of this function
-  function sellItem(uint _upc, uint _price) onlyFarmer public packed(_upc) verifyCaller(msg.sender) {
+  function sellItem(uint _upc, uint _price) onlyFarmer public packed(_upc) verifyCaller(items[_upc].ownerID) {
     // Update the appropriate fields
     Item storage item = items[_upc];
     item.productPrice = _price;
@@ -246,7 +246,7 @@ contract SupplyChain is Ownable, FarmerRole, DistributorRole, RetailerRole, Cons
   // Call modifier to check if upc has passed previous supply chain stage
   // Call modifier to verify caller of this function
 
-  function shipItem(uint _upc) onlyDistributor public sold(_upc) verifyCaller(msg.sender) {
+  function shipItem(uint _upc) onlyDistributor public sold(_upc) verifyCaller(items[_upc].ownerID) {
     // Update the appropriate fields
     Item storage item = items[_upc];
     item.itemState = State.Shipped;
